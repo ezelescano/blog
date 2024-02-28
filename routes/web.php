@@ -14,14 +14,20 @@ use App\Http\Controllers\CursoController;
 |
 */
 
-Route::get('/', HomeController::class);
+Route::get('/', HomeController::class)->name('home');
 
 
 Route::controller(CursoController::class)->group(function(){
     
-    Route::get('cursos', 'index');
+    Route::get('cursos', 'index')->name('cursos.index');
 
-    Route::get('cursos/create', 'create');
+    Route::get('cursos/create', 'create')->name('cursos.create');
 
-    Route::get('cursos/{curso}', 'show');
+    Route::post('cursos', 'store')->name('cursos.store');
+
+    Route::get('cursos/{curso}', 'show')->name('cursos.show');
+
+    Route::get('cursos/{curso}/edit', 'edit')->name('cursos.edit');
+
+    Route::put('cursos/{curso}', 'update')->name('cursos.update');
 });
