@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCurso;
 use App\Models\Curso;
 use Illuminate\Http\Request;
 
@@ -10,25 +11,36 @@ class CursoController extends Controller
     public function index()
     {
         $cursos = Curso::paginate();
-        
+
         return view('cursos.index', compact('cursos'));
     }
- 
+
     public function create()
     {
         return view('cursos.create');
     }
 
-    public function store(Request $request){
-        $curso = new Curso();
+    public function store(StoreCurso $request)
+    {
+        // otra forma de crear un registro
+        // $curso = Curso::create([
+        //     'name'=> $request->name,
+        //     'descripcion'=>  $request->descripcion,
+        //     'categoria' => $request->categoria
+        // ]);
 
-        $curso->name = $request->name;
-        $curso->descripcion = $request->descripcion;
-        $curso->categoria = $request->categoria;
 
-        $curso->save();
+        // $curso = new Curso();
 
-        return redirect()->route('cursos.show', $curso->id); 
+        // $curso->name = $request->name;
+        // $curso->descripcion = $request->descripcion;
+        // $curso->categoria = $request->categoria;
+
+        // $curso->save();
+
+        $curso = Curso::create($request->all()); //esta linea de codigo hacemos todo el trabajo de ingresar linea por linea
+
+        return redirect()->route('cursos.show', $curso->id);
     }
 
     public function show(Curso $curso)
@@ -36,19 +48,29 @@ class CursoController extends Controller
         return view('cursos.show', compact('curso'));
     }
 
-    public function edit(Curso $curso){
-        
+    public function edit(Curso $curso)
+    {
+
         return view('cursos.edit', compact('curso'));
     }
 
-    public function update(Request $request, Curso $curso){
-        $curso->name = $request->name;
-        $curso->descripcion = $request->descripcion;
-        $curso->categoria = $request->categoria;
+    public function update(Request $request, Curso $curso)
+    {
 
-        $curso->save();
+        $request->validate([
+            'name' => 'required',
+            'descripcion' => 'required',
+            'categoria' => 'required'
+        ]);
 
-        return redirect()->route('cursos.show', $curso->id); 
+        $curso->update($request->all()); //aca ya tenemos rescatadda la clase Curso
 
+        return redirect()->route('cursos.show', $curso->id);
+    }
+
+    public function destroy(Curso $curso){
+        $curso->delete();
+
+        return redirect()->route('cursos.index');
     }
 }
